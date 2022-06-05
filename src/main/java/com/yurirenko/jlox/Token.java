@@ -14,6 +14,38 @@ class Token {
     }
 
     public String toString() {
-        return type + " " + lexeme + " " + literal;
+        return type + " " + lexeme + " " + literal + "@" + line;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != getClass()) {
+            return false;
+        }
+
+        Token other = (Token) obj;
+        return type == other.type
+                && lexeme.equals(other.lexeme)
+                && compareLiterals(other)
+                && line == other.line;
+    }
+
+    private boolean compareLiterals(Token other) {
+        if (literal == other.literal) {
+            return true;
+        }
+        if (other.literal == null) {
+            return false;
+        }
+
+        if (literal.getClass() == Double.class &&
+                other.literal.getClass() == Double.class) {
+            return literal.equals(other.literal);
+        }
+
+        return false;
     }
 }
