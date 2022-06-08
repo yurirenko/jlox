@@ -32,7 +32,6 @@ class Scanner {
         keywords.put("true", TokenType.TRUE);
         keywords.put("var", TokenType.VAR);
         keywords.put("while", TokenType.WHILE);
-
     }
 
     Scanner(String source) {
@@ -82,6 +81,8 @@ class Scanner {
             case '/' -> {
                 if (match('/')) {
                     while (peek() != '\n' && !isAtEnd()) advance();
+                } else if (match('*')) {
+                    skipMultilineComment();
                 } else {
                     addToken(TokenType.SLASH);
                 }
@@ -104,8 +105,31 @@ class Scanner {
         }
     }
 
+    private char advance(int chars) {
+        char currentChar = source.charAt(current);
+        current += chars;
+
+        return currentChar;
+    }
+
     private char advance() {
-        return source.charAt(current++);
+        return advance(1);
+    }
+
+    private void skipMultilineComment() {
+        while ((peek() != '*' || peekNext() != '/') && !isAtEnd()) {
+            if (peek() == '\n') line++;
+
+            advance();
+        }
+
+        if (isAtEnd()) {
+            Lox.error(line, "Unterminated comment.");
+            return;
+        }
+
+        // Advancing 2 characters because we need to skip the ending "*/"
+        advance(2);
     }
 
     private void addToken(TokenType type) {
