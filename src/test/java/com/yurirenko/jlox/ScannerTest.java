@@ -29,6 +29,7 @@ public class ScannerTest {
 
     static {
         int line = 1;
+
         expectedTokens.add(new Token(TokenType.FN, "fn", null, line));
         expectedTokens.add(new Token(TokenType.IDENTIFIER, "fibonacci", null, line));
         expectedTokens.add(new Token(TokenType.LEFT_PAREN, "(", null, line));
@@ -103,5 +104,25 @@ public class ScannerTest {
     void scanTokens() {
         List<Token> tokens = new Scanner(inputString).scanTokens();
         assertArrayEquals(expectedTokens.toArray(), tokens.toArray());
+    }
+
+    @Test
+    void scanTokensWithUnterminatedString() {
+        String input = "\"Hello, world!";
+
+        List<Token> tokens = new Scanner(input).scanTokens();
+        var expectedTokens = new Token[]{(new Token(TokenType.EOF, "", null, 1))};
+
+        assertArrayEquals(expectedTokens, tokens.toArray());
+    }
+
+    @Test
+    void scanTokensWithUnterminatedComment() {
+        String input = "/*Hello, world!";
+
+        List<Token> tokens = new Scanner(input).scanTokens();
+        var expectedTokens = new Token[]{(new Token(TokenType.EOF, "", null, 1))};
+
+        assertArrayEquals(expectedTokens, tokens.toArray());
     }
 }
